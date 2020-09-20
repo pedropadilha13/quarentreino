@@ -16,11 +16,25 @@ const UserSchema = new Schema({
   email: {
     type: String,
     trim: true,
-    required: [true, 'Email is required']
+    required: [true, 'Email is required'],
+    unique: [true, 'Email must be unique']
   },
-  senha: {
+  password: {
+    type: String,
+    required: [true, 'Password is required']
+  },
+  nascimento: {
+    type: Date,
+    required: [true, 'Data de Nascimento is required']
+  },
+  telefone: {
     type: String,
     required: false
+  },
+  tipo: {
+    type: String,
+    enum: ['aluno', 'professor', 'admin'],
+    default: 'aluno'
   },
   created: {
     type: Date,
