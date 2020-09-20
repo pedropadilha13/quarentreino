@@ -1,4 +1,5 @@
 # Quarentreino
+
 Trabalho da Disciplina de Lab. de Engenharia de Software
 
 ## Integrantes
@@ -8,3 +9,7 @@ Trabalho da Disciplina de Lab. de Engenharia de Software
 - Erick Sambrano Garcia - 31820972
 - Nicolle Aparecida Suryan - 31810446
 - Pedro Padilha Farroco - 31825672
+
+## About
+
+Projeto hospedado em: <https://quarentreino.herokuapp.com>
