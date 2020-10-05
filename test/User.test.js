@@ -1,6 +1,4 @@
-const {
-  parsed: { MONGO_TEST_URI }
-} = require('dotenv').config();
+require('dotenv').config();
 
 const bcrypt = require('bcrypt');
 const mongo = require('mongodb');
@@ -17,6 +15,8 @@ const userData = {
   tipo: 'admin'
 };
 
+const { MONGO_TEST_URI } = process.env;
+
 const removeAllCollections = async () => {
   const collections = Object.keys(mongoose.connection.collections);
 
@@ -28,16 +28,12 @@ const removeAllCollections = async () => {
 
 describe('User Model Test', () => {
   beforeAll(async () => {
-    await mongoose.connect(
-      MONGO_TEST_URI,
-      { useNewUrlParser: true, useUnifiedTopology: true },
-      err => {
-        if (err) {
-          console.error(err);
-          process.exit(1);
-        }
+    await mongoose.connect(MONGO_TEST_URI, { useNewUrlParser: true, useUnifiedTopology: true }, err => {
+      if (err) {
+        console.error(err);
+        process.exit(1);
       }
-    );
+    });
   });
 
   afterAll(async () => {
