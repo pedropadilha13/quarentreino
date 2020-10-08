@@ -17,20 +17,40 @@ router.get('/', requireNotAuth, (req, res) => {
   });
 });
 
-router.post(
-  '/',
-  requireNotAuth,
-  passport.authenticate('local', {
-    failureRedirect: '/auth',
-    successRedirect: '/default'
-  })
-);
+router.post('/', requireNotAuth, (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+
+    if (!user) {
+      return res.status(404).render('main', {
+        page: 'login',
+        path: '/auth',
+        title: 'Login | Quarentreino',
+        values: {
+          email: req.body.email
+        }
+      });
+    }
+
+    req.logIn(user, err => {
+      if (err) {
+        return next(err);
+      }
+      return res.redirect('/default');
+    });
+  })(req, res, next);
+});
 
 router.get('/signup', requireNotAuth, (req, res) => {
   return res.render('main', {
     page: 'signup',
     path: '/auth/signup',
-    title: 'Signup | Quarentreino'
+    title: 'Signup | Quarentreino',
+    scripts: ['jquery.mask.min.js', 'signup.js'],
+    formType: 'signup',
+    formTitle: 'Cadastre-se já!'
   });
 });
 
@@ -71,7 +91,11 @@ router.post('/signup', requireNotAuth, async (req, res) => {
   if (Object.keys(errors).length !== 0) {
     return res.status(422).render('main', {
       page: 'signup',
+      path: '/auth/signup',
       title: 'Signup | Quarentreino',
+      scripts: ['jquery.mask.min.js', 'signup.js'],
+      formType: 'signup',
+      formTitle: 'Cadastre-se já!',
       errors,
       values: { nome, sobrenome, email, password, nascimento, telefone, tipo }
     });
@@ -83,16 +107,27 @@ router.post('/signup', requireNotAuth, async (req, res) => {
       sobrenome,
       email,
       password,
-      nascimento: moment(nascimento, 'DD-MM-YYYY'),
+      nascimento: moment(nascimento, 'DD/MM/YYYY'),
       telefone,
       tipo
     });
+
+    req.session.messages = [
+      ...(req.session.messages || []),
+      { variant: 'success', content: 'Seu cadastro foi realizado com sucesso!' }
+    ];
+
     return res.status(201).redirect('/auth');
   } catch (error) {
     console.error(error);
-    return res.status(500).render('main', {
+    req.session.messages = [
+      ...(req.session.messages || []),
+      { variant: 'danger', content: 'Ocorreu um erro. Por favor, tente mais tarde.' }
+    ];
+    return res.status(422).render('main', {
       page: 'signup',
-      title: 'Signup | Quarentreino'
+      title: 'Signup | Quarentreino',
+      values: { nome, sobrenome, email, password, nascimento, telefone, tipo }
     });
   }
 });

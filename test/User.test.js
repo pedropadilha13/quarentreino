@@ -1,8 +1,7 @@
-const {
-  parsed: { MONGO_TEST_URI }
-} = require('dotenv').config();
+require('dotenv').config();
 
 const bcrypt = require('bcrypt');
+const mongo = require('mongodb');
 const mongoose = require('mongoose');
 const moment = require('moment');
 const User = require('../models/User');
@@ -16,6 +15,8 @@ const userData = {
   tipo: 'admin'
 };
 
+const { MONGO_TEST_URI } = process.env;
+
 const removeAllCollections = async () => {
   const collections = Object.keys(mongoose.connection.collections);
 
@@ -27,19 +28,16 @@ const removeAllCollections = async () => {
 
 describe('User Model Test', () => {
   beforeAll(async () => {
-    await mongoose.connect(
-      MONGO_TEST_URI,
-      { useNewUrlParser: true, useUnifiedTopology: true },
-      err => {
-        if (err) {
-          console.error(err);
-          process.exit(1);
-        }
+    await mongoose.connect(MONGO_TEST_URI, { useNewUrlParser: true, useUnifiedTopology: true }, err => {
+      if (err) {
+        console.error(err);
+        process.exit(1);
       }
-    );
+    });
   });
 
   afterAll(async () => {
+    await mongoose.connection.dropDatabase();
     await mongoose.connection.close();
   });
 
@@ -52,16 +50,44 @@ describe('User Model Test', () => {
       ...userData,
       nascimento: moment(userData.nascimento, 'DD/MM/YYYY').toISOString()
     });
+
     const savedUser = await validUser.save();
-    expect(savedUser._id).toBeDefined();
-    expect(savedUser._id).toBeDefined();
-    expect(savedUser.nome).toBe(userData.nome);
-    expect(savedUser.sobrenome).toBe(userData.sobrenome);
-    expect(savedUser.email).toBe(userData.email);
-    expect(bcrypt.compareSync(userData.password, savedUser.password)).toBe(true);
-    expect(moment(savedUser.nascimento).format('DD/MM/YYYY')).toBe(userData.nascimento);
-    expect(savedUser.telefone).toBe(userData.telefone);
-    expect(savedUser.tipo).toBe(userData.tipo);
+
+    const user = await User.findOne({ _id: savedUser._id });
+
+    expect(user._id).toBeDefined();
+    expect(user.nome).toBe(userData.nome);
+    expect(user.sobrenome).toBe(userData.sobrenome);
+    expect(user.email).toBe(userData.email);
+    expect(bcrypt.compareSync(userData.password, user.password)).toBe(true);
+    expect(moment(user.nascimento).format('DD/MM/YYYY')).toBe(userData.nascimento);
+    expect(user.telefone).toBe(userData.telefone);
+    expect(user.tipo).toBe(userData.tipo);
+  });
+
+  it("Create user and attempt to create another user with duplicate 'unique' field", async () => {
+    const validUser = await User.create({
+      ...userData,
+      nascimento: moment(userData.nascimento, 'DD/MM/YYYY').toISOString()
+    });
+
+    const user = await User.findOne({ _id: validUser._id });
+
+    expect(user._id).toBeDefined();
+
+    let error;
+
+    try {
+      const invalidUser = await User.create({
+        ...userData,
+        nascimento: moment(userData.nascimento, 'DD/MM/YYYY').toISOString()
+      });
+    } catch (err) {
+      error = err;
+    }
+
+    expect(error).toBeInstanceOf(mongo.MongoError);
+    expect(error.keyValue.email).toBeDefined();
   });
 
   it('Create User successfully, but field not defined in Schema should be undefined', async () => {
@@ -70,9 +96,13 @@ describe('User Model Test', () => {
       nascimento: moment(userData.nascimento, 'DD/MM/YYYY').toISOString(),
       username: 'pedropadilha13'
     });
+
     const savedUserWithInvalidField = await userWithInvalidField.save();
-    expect(savedUserWithInvalidField._id).toBeDefined();
-    expect(savedUserWithInvalidField.username).toBeUndefined();
+
+    const user = await User.findOne({ _id: savedUserWithInvalidField._id });
+
+    expect(user._id).toBeDefined();
+    expect(user.username).toBeUndefined();
   });
 
   it('Create User without required field', async () => {
