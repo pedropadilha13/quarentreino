@@ -80,7 +80,7 @@ UserSchema.methods.updatePassword = function (newPassword) {
 };
 
 UserSchema.methods.getName = function () {
-  return `${this.firstName} ${this.lastName}`;
+  return `${this.nome} ${this.sobrenome}`;
 };
 
 module.exports = mongoose.model('User', UserSchema);

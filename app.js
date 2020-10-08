@@ -10,6 +10,8 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
 
+const { messages } = require('./middlewares');
+
 require('./models/User');
 require('./models/Treino');
 require('./models/Exercicio');
@@ -20,9 +22,6 @@ connectDB();
 require('./services/passport');
 
 const indexRouter = require('./routes/index');
-const authRouter = require('./routes/auth');
-const usersRouter = require('./routes/users');
-const treinosRouter = require('./routes/treinos');
 
 const app = express();
 
@@ -46,13 +45,11 @@ app.use(
   })
 );
 
+app.use(messages);
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', indexRouter);
-app.use('/auth', authRouter);
-app.use('/users', usersRouter);
-app.use('/treinos', treinosRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
