@@ -1,4 +1,3 @@
-<% console.log(locals) %>
 <div class="container m-auto pt-5">
   <form class="signup-form" method="post" autocomplete="off">
     <h4 class="mb-3">Login Quarentreino</h4>
@@ -14,9 +13,7 @@
           aria-describedby="emailFeedback"
           value="<%= locals.values && locals.values.email %>"
         />
-        <div id="emailFeedback" class="invalid-feedback">
-          <%= locals.errors && locals.errors.email || "" %>
-        </div>
+        <div id="emailFeedback" class="invalid-feedback"><%= locals.errors && locals.errors.email || "" %></div>
       </div>
       <div class="form-group">
         <label for="inputPassword" class="sr-only">Senha</label>
@@ -28,15 +25,11 @@
           placeholder="Senha"
           aria-describedby="passwordFeedback"
         />
-        <div id="passwordFeedback" class="invalid-feedback">
-          <%= locals.errors && locals.errors.password || "" %>
-        </div>
+        <div id="passwordFeedback" class="invalid-feedback"><%= locals.errors && locals.errors.password || "" %></div>
       </div>
       <div>
         <button type="submit" class="btn btn-primary btn-block">Entrar</button>
-        <span class="float-right"
-          >Ainda não tem uma conta? Faça seu <a href="/auth/signup">cadastro</a> agora!</span
-        >
+        <span class="float-right">Ainda não tem uma conta? Faça seu <a href="/auth/signup">cadastro</a> agora!</span>
       </div>
     </div>
   </form>

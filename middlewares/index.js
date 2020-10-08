@@ -26,11 +26,16 @@ module.exports = {
 
     return next();
   },
-  requreAdmin: (req, res, next) => {
+  requireAdmin: (req, res, next) => {
     if (req.user.tipo !== 'admin') {
       return res.status(403).redirect('/');
     }
 
+    return next();
+  },
+  messages: (req, res, next) => {
+    res.locals.messages = req.session.messages;
+    delete req.session.messages;
     return next();
   }
 };

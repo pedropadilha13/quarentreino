@@ -1,9 +1,21 @@
 const express = require('express');
 const router = express.Router();
 
-const { requireAuth, requireAluno, requireProfessor, requreAdmin } = require('../middlewares');
+const { requireAuth, requireAluno, requireProfessor, requireAdmin } = require('../middlewares');
 
-router.get('/', function (req, res, next) {
+const authRouter = require('./auth');
+const usersRouter = require('./users');
+const adminRouter = require('./admin');
+const alunoRouter = require('./aluno');
+const professorRouter = require('./professor');
+
+router.use('/auth', authRouter);
+router.use('/users', usersRouter);
+router.use('/aluno', requireAuth, requireAluno, alunoRouter);
+router.use('/professor', requireAuth, requireProfessor, professorRouter);
+router.use('/admin', requireAuth, requireAdmin, adminRouter);
+
+router.get('/', async (req, res) => {
   return res.render('main', {
     page: 'index',
     path: '/',
@@ -21,30 +33,6 @@ router.get('/about', async (req, res) => {
 
 router.get('/default', requireAuth, async (req, res) => {
   return res.redirect(`/${req.user.tipo}`);
-});
-
-router.get('/aluno', requireAuth, requireAluno, async (req, res) => {
-  return res.render('main', {
-    page: 'aluno',
-    path: '/aluno',
-    user: req.user
-  });
-});
-
-router.get('/professor', requireAuth, requireProfessor, async (req, res) => {
-  return res.render('main', {
-    page: 'professor',
-    path: '/professor',
-    user: req.user
-  });
-});
-
-router.get('/admin', requireAuth, requreAdmin, async (req, res) => {
-  return res.render('main', {
-    page: 'admin',
-    path: '/admin',
-    user: req.user
-  });
 });
 
 module.exports = router;

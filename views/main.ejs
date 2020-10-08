@@ -5,7 +5,11 @@
   </head>
   <body>
     <% include shared/_navbar %> 
-    
+   
+    <% locals.messages && locals.messages.forEach(message => { %>
+      <% include shared/_message %>
+    <% }) %>
+
     <%- include(locals.page || 'index') %>
     
     <% include shared/_scripts %>
