@@ -35,13 +35,13 @@
     <input type="text" name="email" id="inputEmail" class="w-100 form-control<%= locals.errors &&
     locals.errors.email ? ' is-invalid' : '' %>" placeholder="Email"
     aria-describedby="emailFeedback" value="<%= locals.values && locals.values.email %>" <%=
-    locals.formType !== 'signup' && 'disabled' %> />
+    locals.formType !== 'signup' && locals.formType !== 'adminCreateUser' && 'disabled' %> />
     <div id="emailFeedback" class="invalid-feedback">
       <%= locals.errors && locals.errors.email || "" %>
     </div>
   </div>
 
-  <% if (locals.formType === 'signup') { %>
+  <% if (locals.formType === 'signup' || locals.formType === 'adminCreateUser') { %>
   <div class="form-group">
     <label for="inputPassword" class="sr-only">Senha</label>
     <input
@@ -88,13 +88,13 @@
       <%= locals.errors && locals.errors.telefone || "" %>
     </div>
   </div>
-  <% if (locals.formType === 'adminEditUser') { %>
+  <% if (locals.formType === 'adminEditUser' || locals.formType === 'adminCreateUser') { %>
     <div class="form-group">
       <label for="selectTipo" class="sr-only">Tipo</label>
       <select class="form-control" id="selectTipo" name="tipo">
-        <option value="aluno" <%= locals.values.tipo === 'aluno' ? 'selected' : '' %>>Aluno</option>
-        <option value="professor" <%= locals.values.tipo === 'professor' ? 'selected' : '' %>>Professor</option>
-        <option value="admin" <%= locals.values.tipo === 'admin' ? 'selected' : '' %>>Admin</option>
+        <option value="aluno" <%= locals.values && locals.values.tipo === 'aluno' ? 'selected' : '' %>>Aluno</option>
+        <option value="professor" <%= locals.values && locals.values.tipo === 'professor' ? 'selected' : '' %>>Professor</option>
+        <option value="admin" <%= locals.values && locals.values.tipo === 'admin' ? 'selected' : '' %>>Admin</option>
       </select>
     </div>
   <% } %>
