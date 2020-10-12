@@ -56,7 +56,12 @@ UserSchema.pre('save', async function (next) {
   }
 
   this.updated = Date.now();
-  return next;
+  return next();
+});
+
+UserSchema.pre('updateOne', function (save) {
+  this.update({}, { $set: { updated: Date.now() } });
+  next();
 });
 
 UserSchema.methods.verifyPassword = function (password) {

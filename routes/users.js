@@ -22,6 +22,91 @@ router.get('/me', requireAuth, (req, res) => {
   return res.json(req.user);
 });
 
+router.get('/new', requireAdmin, async (req, res) => {
+  return res.render('main', {
+    page: 'createUser',
+    path: '/:id/createUser',
+    title: 'Novo Usuário | Quarentreino',
+    scripts: ['jquery.mask.min.js', 'editUser.js'],
+    formType: 'adminCreateUser',
+    user: req.user
+  });
+});
+
+router.post('/new', requireAdmin, async (req, res) => {
+  let { nome, sobrenome, email, password, nascimento, telefone, tipo } = req.body;
+
+  const errors = {};
+
+  if (!nome) {
+    errors.nome = 'Campo obrigatório';
+  }
+
+  if (!sobrenome) {
+    errors.sobrenome = 'Campo obrigatório';
+  }
+
+  if (!email) {
+    errors.email = 'Campo obrigatório';
+  } else if (!email.match(EMAIL_REGEX)) {
+    errors.email = 'E-mail inválido';
+  } else {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      errors.email = 'Email já cadastrado';
+    }
+  }
+
+  if (password.length < 8) {
+    errors.password = 'A senha deve conter pelo menos 8 caracteres';
+  }
+
+  if (!nascimento) {
+    errors.nascimento = 'Campo obrigatório';
+  } else if (!moment(nascimento, 'DD/MM/YYYY').isValid()) {
+    errors.nascimento = 'Data inválida';
+  }
+
+  if (Object.keys(errors).length !== 0) {
+    return res.status(422).render('main', {
+      page: 'createUser',
+      path: '/:id/createUser',
+      title: 'Novo Usuário | Quarentreino',
+      scripts: ['jquery.mask.min.js', 'editUser.js'],
+      formType: 'adminCreateUser',
+      user: req.user,
+      values: { nome, sobrenome, email, password, nascimento, telefone, tipo },
+      errors
+    });
+  }
+
+  try {
+    await User.create({
+      nome,
+      sobrenome,
+      email,
+      password,
+      nascimento: moment(nascimento, 'DD/MM/YYYY'),
+      telefone,
+      tipo
+    });
+
+    req.session.messages = [
+      ...(req.session.messages || []),
+      { variant: 'success', content: `Usuário "${nome}" cadastrado com sucesso!` }
+    ];
+
+    return res.status(201).redirect('/admin');
+  } catch (error) {
+    console.error(error);
+    req.session.messages = [
+      ...(req.session.messages || []),
+      { variant: 'danger', content: `Ocorreu um erro ao cadastrar o usuário "${nome}". Por favor, tente mais tarde.` }
+    ];
+    return res.status(500).redirect('/admin');
+  }
+});
+
 router.get('/:id', requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
@@ -37,8 +122,7 @@ router.get('/:id', requireAdmin, async (req, res) => {
 
 router.get('/:id/edit', requireAdmin, async (req, res) => {
   try {
-    const { id } = req.params;
-    const user = await User.findById(id, '-password').lean();
+    const user = await User.findById(req.params, '-password').lean();
     return res.render('main', {
       page: 'editUser',
       path: '/:id/editUser',

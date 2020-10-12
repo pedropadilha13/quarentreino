@@ -1,6 +1,12 @@
 $(document).ready(() => {
   const table = $('table').DataTable({
     ajax: '/users',
+    buttons: [
+      {
+        text: 'Novo',
+        action: () => (window.location = '/users/new')
+      }
+    ],
     columns: [
       { title: 'ID', data: '_id', visible: false },
       { title: 'Nome', data: 'nome' },
@@ -38,10 +44,16 @@ $(document).ready(() => {
     }
   });
 
+  table.on('init', () => {
+    table.buttons().container().appendTo($('#usersTable_wrapper .col-md-6:eq(0)'));
+  });
+
   table.on('click', 'tbody tr', function () {
     const { _id } = table.row(this).data();
     window.location = `/users/${_id}/edit`;
   });
+
+  window.table = table;
 });
 
 const getTipoLabel = tipo => {
@@ -49,7 +61,7 @@ const getTipoLabel = tipo => {
     case 'aluno':
       return '<span class="badge badge-secondary">Aluno</span>';
     case 'professor':
-      return '<span class="badge badge-primary">Professor</span>';
+      return '<span class="badge badge-warning">Professor</span>';
     case 'admin':
       return '<span class="badge badge-success">Admin</span>';
   }
