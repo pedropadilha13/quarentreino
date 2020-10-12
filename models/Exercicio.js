@@ -21,4 +21,9 @@ const ExercicioSchema = new Schema({
   }
 });
 
+ExercicioSchema.pre('updateOne', function (next) {
+  this.update({}, { $set: { updated: Date.now() } });
+  next();
+});
+
 module.exports = mongoose.model('Exercicio', ExercicioSchema);

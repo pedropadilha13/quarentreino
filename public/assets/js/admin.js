@@ -45,7 +45,6 @@ $(document).ready(() => {
   });
 
   table.on('init', () => {
-    console.log('aaa');
     table.buttons().container().appendTo($('#usersTable_wrapper .col-md-6:eq(0)'));
   });
 

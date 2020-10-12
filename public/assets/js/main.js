@@ -11,9 +11,7 @@ const ajax = options =>
 
 const showAlertMessage = options => {
   const alertMessage = $(
-    `<div class="alert ${
-      options.variant || 'alert-primary'
-    } alert-dismissible show fade in" role="alert" id="myAlert">
+    `<div class="alert ${options.variant || 'alert-primary'} alert-dismissible show fade in" role="alert" id="myAlert">
           ${options.content || 'Ocorreu um erro. Por favor, tente mais tarde'}
           <button class="btn close" data-dismiss="alert" aria-label="close">
               <i class="fa fa-times"></i>
@@ -28,9 +26,7 @@ const showAlertMessage = options => {
 
 const loadingIcon = visible => {
   if (visible === true) {
-    const spinner = $(
-      '<img class="spinner" src="/assets/images/ajax-loader.gif" id="spinner"></img>'
-    );
+    const spinner = $('<img class=" " src="/assets/images/loading.gif" id="spinner"></img>');
     $('body').append(spinner);
   } else {
     $('#spinner').remove();

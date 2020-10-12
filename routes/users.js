@@ -122,8 +122,7 @@ router.get('/:id', requireAdmin, async (req, res) => {
 
 router.get('/:id/edit', requireAdmin, async (req, res) => {
   try {
-    const { id } = req.params;
-    const user = await User.findById(id, '-password').lean();
+    const user = await User.findById(req.params, '-password').lean();
     return res.render('main', {
       page: 'editUser',
       path: '/:id/editUser',

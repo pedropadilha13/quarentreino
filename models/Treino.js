@@ -29,4 +29,9 @@ const TreinoSchema = new Schema({
   }
 });
 
+TreinoSchema.pre('updateOne', function (next) {
+  this.update({}, { $set: { updated: Date.now() } });
+  next();
+});
+
 module.exports = mongoose.model('Treino', TreinoSchema);
