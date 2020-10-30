@@ -16,3 +16,7 @@ Trabalho da Disciplina de Lab. de Engenharia de Software
 ## About
 
 Projeto hospedado em: <https://quarentreino.herokuapp.com>
+
+## Cronograma
+
+[Cronograma](https://docs.google.com/spreadsheets/d/1o8rpspghFWoj5KcxUxhRydp410mgLYUaaFfOW-crd98/edit?usp=sharing)
