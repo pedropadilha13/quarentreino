@@ -59,7 +59,7 @@ UserSchema.pre('save', async function (next) {
   return next();
 });
 
-UserSchema.pre('updateOne', function (save) {
+UserSchema.pre('updateOne', function (next) {
   this.update({}, { $set: { updated: Date.now() } });
   next();
 });
